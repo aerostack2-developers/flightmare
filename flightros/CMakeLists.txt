@@ -1,14 +1,13 @@
-project(flightros)
+cmake_minimum_required(VERSION 3.5)
+set(PROJECT_NAME flightros)
+project(${PROJECT_NAME})
 
-cmake_minimum_required(VERSION 3.0.0)
-
-find_package(catkin_simple REQUIRED)
-
-find_package(OpenCV REQUIRED)
+# Default to C++17
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
 
 option(BUILD_MP "Build Motion Planning" OFF)
-
-catkin_simple()
 
 # Setup Default Build Type as Release
 if (NOT CMAKE_BUILD_TYPE)
@@ -36,120 +35,86 @@ add_compile_options(-O3)
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_ARCH_FLAGS} -Wall -DNDEBUG -fPIC")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -Wall -g")
 
+
+set(PROJECT_DEPENDENCIES
+  ament_cmake
+  rclcpp
+  OpenCV
+  flightlib)
+
+
+
+
+#add_subdirectory(../flightlib/ flightlib/)#CHAPUZA WARNING!!! <-----------
+
+
+
+
+
+foreach(DEPENDENCY ${PROJECT_DEPENDENCIES})
+  find_package(${DEPENDENCY} REQUIRED)
+endforeach()
+
+include_directories(
+  include
+  include/${PROJECT_NAME}
+)
+
 #pilot
 
-cs_add_library(flight_pilot
-    src/pilot/flight_pilot.cpp
-)
+add_library(flight_pilot src/pilot/flight_pilot.cpp)
+ament_target_dependencies(flight_pilot ${PROJECT_DEPENDENCIES})
+target_link_libraries(flight_pilot ${OpenCV_LIBRARIES} stdc++fs)
 
-target_link_libraries(flight_pilot
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-  stdc++fs
-)
-
-cs_add_executable(flight_pilot_node
-   src/pilot/flight_pilot_node.cpp
-)
-
-target_link_libraries(flight_pilot_node
-  flight_pilot
-  ${OpenCV_LIBRARIES}
-  stdc++fs
-)
-
-# motion_planning
-
-if(BUILD_MP)
-
-    find_package(OpenMP)
-    if (OpenMP_CXX_FOUND)
-        message("Found OpenMP ${OpenMP_CXX_FOUND}  ${OpenMP_VERSION} ${OpenMP_CXX_VERSION_MAJOR} ${Open3D_VERSION} OpenMP::OpenMP_CXX")
-        get_cmake_property(_variableNames VARIABLES)
-        list (SORT _variableNames)
-        foreach (_variableName ${_variableNames})
-            message(STATUS "${_variableName}=${${_variableName}}")
-        endforeach()
-    else ()
-        message("OpenMP not found")
-    endif ()
-
-    # Open3D
-    find_package(Open3D)
-    if (Open3D_FOUND)
-        message("Found Open3D ${Open3D_VERSION}")
-        list(APPEND Open3D_LIBRARIES dl)
-        # link_directories must be before add_executable
-        link_directories(${Open3D_LIBRARY_DIRS})
-    else ()
-        message("Open3D not found")
-    endif ()
-
-    find_package(ompl REQUIRED)
-    if (OMPL_FOUND)
-        message("Found OMPL ${OMPL_VERSION}")
-        include_directories(${OMPL_INCLUDE_DIRS})
-
-     else ()
-        message("OMPL not found")
-    endif ()
-
-    if (OpenMP_CXX_FOUND AND Open3D_FOUND AND OMPL_FOUND)
-        cs_add_executable(motion_planning
-            src/motion_planning/motion_planning.cpp
-        )
-        target_include_directories(motion_planning PUBLIC ${Open3D_INCLUDE_DIRS})
-
-        target_link_libraries(motion_planning
-        ${catkin_LIBRARIES}
-        ${OpenCV_LIBRARIES}
-        stdc++fs
-        ompl
-        ${Open3D_LIBRARIES}
-        OpenMP::OpenMP_CXX
-        zmq
-        zmqpp
-        )
-    else ()
-        message("Failed to build motion planning")
-    endif ()
-
-endif()
+add_executable(flight_pilot_node src/pilot/flight_pilot_node.cpp)
+ament_target_dependencies(flight_pilot_node ${PROJECT_DEPENDENCIES})
+target_link_libraries(flight_pilot_node flight_pilot ${OpenCV_LIBRARIES} stdc++fs)
 
 # racing
 
+# catkin_package(
+# LIBRARIES
+# CATKIN_DEPENDS
+# )
 
-catkin_package(
-LIBRARIES
-CATKIN_DEPENDS
-)
+# cs_add_executable(racing
+#     src/racing/racing.cpp
+# )
 
-cs_add_executable(racing
-    src/racing/racing.cpp
-)
-
-target_link_libraries(racing
-${catkin_LIBRARIES}
-${OpenCV_LIBRARIES}
-stdc++fs
-zmq
-zmqpp
-)
+# target_link_libraries(racing
+# ${catkin_LIBRARIES}
+# ${OpenCV_LIBRARIES}
+# stdc++fs
+# zmq
+# zmqpp
+# )
 
 # camera
 
-cs_add_executable(camera
-    src/camera/camera.cpp
-)
+add_executable(camera src/camera/camera.cpp)
+ament_target_dependencies(camera ${PROJECT_DEPENDENCIES})
 
 target_link_libraries(camera
-${catkin_LIBRARIES}
 ${OpenCV_LIBRARIES}
 stdc++fs
 zmq
 zmqpp
 )
 
+
+
+
 # Finish
-cs_install()
-cs_export()
+# cs_install()
+install(
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
+# cs_export()
+install(TARGETS
+        flight_pilot_node
+        camera
+        DESTINATION lib/${PROJECT_NAME})
+
+ament_package()
+

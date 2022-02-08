@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.0)
-
-project(flightlib VERSION 0.1.0)
+cmake_minimum_required(VERSION 3.5)
+set(PROJECT_NAME flightlib)
+project(${PROJECT_NAME} VERSION 0.1.0)
 
 message(STATUS "======================  !Flightmare!  ======================")
 
@@ -67,16 +67,16 @@ if(ENABLE_BLAS)
   endif()
 endif()
 
-# Check for ccache
-if(NOT DEFINED CATKIN_DEVEL_PREFIX)
-  find_program(CCACHE_PROGRAM ccache)
-  if(CCACHE_PROGRAM)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
-  else()
-    message(INFO "Build time could be improved with ccache!")
-    message(INFO "    sudo apt install ccache")
-  endif()
-endif()
+# # Check for ccache
+# if(NOT DEFINED CATKIN_DEVEL_PREFIX)
+#   find_program(CCACHE_PROGRAM ccache)
+#   if(CCACHE_PROGRAM)
+#     set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+#   else()
+#     message(INFO "Build time could be improved with ccache!")
+#     message(INFO "    sudo apt install ccache")
+#   endif()
+# endif()
 
 ################################################################################
 # Setup Compilation
@@ -139,6 +139,19 @@ message(STATUS "The activated CXX DEBUG configuration is:\n ${CMAKE_CXX_FLAGS_DE
 ################################################################################
 message(STATUS "======>  Setup Build  ")
 
+
+
+# Create file lists for flightlib Headers
+
+file(GLOB_RECURSE FLIGHTLIB_HEADERS
+  include/flightlib/bridges/*.cpp
+  include/flightlib/dynamics/*.cpp
+  include/flightlib/objects/*.cpp
+  include/flightlib/sensors/*.cpp
+  include/flightlib/envs/*.cpp
+  include/flightlib/common/*.cpp
+)
+
 # Create file lists for flightlib source
 file(GLOB_RECURSE FLIGHTLIB_SOURCES
   src/bridges/*.cpp
@@ -177,11 +190,11 @@ file(GLOB_RECURSE FLIGHTLIB_UNITY_BRIDGE_TEST_SOURCES
 # Optional Catkin Build
 ################################################################################
 
-if(DEFINED CATKIN_DEVEL_PREFIX)
-  message(STATUS "======>  Building with -- catkin -- ")
-  include(cmake/catkin.cmake)
-  return()
-endif()
+# if(DEFINED CATKIN_DEVEL_PREFIX)
+#   message(STATUS "======>  Building with -- catkin -- ")
+#   include(cmake/catkin.cmake)
+#   return()
+# endif()
 
 ################################################################################
 # Setup Build
@@ -200,16 +213,24 @@ if(NOT FLIGHTLIB_SOURCES)
 	set(LIBRARY_NAME)
 else()
   # flightlib
-  add_library(${PROJECT_NAME} ${FLIGHTLIB_SOURCES})
-  target_link_libraries(${PROJECT_NAME} PRIVATE
+  add_library(${PROJECT_NAME} SHARED ${FLIGHTLIB_SOURCES} ${FLIGHTLIB_HEADERS})
+  target_link_libraries(${PROJECT_NAME} PUBLIC
     ${OpenCV_LIBRARIES}
     yaml-cpp
     zmq
     zmqpp
     stdc++fs)
+
   set(LIBRARY_NAME ${PROJECT_NAME})
   set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
-endif()
+  target_include_directories(${PROJECT_NAME}
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+  # ament_export_targets(${PROJECT_NAME}_export HAS_LIBRARY_TARGET)
+
+  endif()
+
 
 if(FLIGHTLIB_GYM_SOURCES)
   # flightlib_gym (python3 binding with Pybind11)
@@ -269,5 +290,23 @@ if(BUILD_UNITY_BRIDGE_TESTS AND FLIGHTLIB_UNITY_BRIDGE_TEST_SOURCES)
     gtest_main)
 add_test(test_unity_bridge test_unity_bridge)
 endif()
+
+message(STATUS "================ AMENT  ================")
+find_package(ament_cmake REQUIRED)
+ament_export_include_directories(include/)
+ament_export_libraries(${LIBRARY_NAME})
+install(
+  DIRECTORY include/flightlib
+  DESTINATION include
+)
+install(
+  TARGETS flightlib
+  EXPORT flightlib
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+)
+ament_package()
 
 message(STATUS "================  !Done. No more nightmare!  ================")
