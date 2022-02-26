@@ -1,10 +1,10 @@
-project(flightrender)
+cmake_minimum_required(VERSION 3.5)
+set(PROJECT_NAME flightrender)
+project(${PROJECT_NAME})
 
-cmake_minimum_required(VERSION 3.0.0)
+find_package(ament_cmake REQUIRED)
 
-find_package(catkin_simple REQUIRED)
-
-catkin_simple()
+# catkin_simple()
 
 # Setup Default Build Type as Release
 if (NOT CMAKE_BUILD_TYPE)
@@ -30,6 +30,20 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEIGEN_STACK_ALLOCATION_LIMIT=1048576")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_ARCH_FLAGS} -Wall -DNDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -Wall -g")
 
+#FIXME:Needed?
+
+# add_executable(flightmare_render RPG_Flightmare/RPG_Flightmare.x86_64) 
+
 # Finish
-cs_install()
-cs_export()
+# cs_install()
+# install(
+#   DIRECTORY launch
+#   DESTINATION share/${PROJECT_NAME}    
+#)
+# cs_export()
+
+install(TARGETS
+        # flightmare_render
+        DESTINATION lib/${PROJECT_NAME})
+
+ament_package()

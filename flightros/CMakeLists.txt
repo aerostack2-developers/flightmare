@@ -39,8 +39,17 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -Wall -g")
 set(PROJECT_DEPENDENCIES
   ament_cmake
   rclcpp
+  as2_core
+  std_msgs
+  as2_msgs
+  std_srvs
+  nav_msgs
+  sensor_msgs
+  Eigen3
   OpenCV
-  flightlib)
+  flightlib
+  image_transport
+  cv_bridge)
 
 
 
@@ -58,51 +67,29 @@ endforeach()
 include_directories(
   include
   include/${PROJECT_NAME}
+  ${EIGEN3_INCLUDE_DIRS}
+)
+
+set(SOURCE_CPP_FILES
+src/pilot/flight_pilot.cpp
+src/camera/camera.cpp
 )
 
 #pilot
-
-add_library(flight_pilot src/pilot/flight_pilot.cpp)
-ament_target_dependencies(flight_pilot ${PROJECT_DEPENDENCIES})
-target_link_libraries(flight_pilot ${OpenCV_LIBRARIES} stdc++fs)
-
-add_executable(flight_pilot_node src/pilot/flight_pilot_node.cpp)
+add_executable(flight_pilot_node src/pilot/flight_pilot_node.cpp ${SOURCE_CPP_FILES})
 ament_target_dependencies(flight_pilot_node ${PROJECT_DEPENDENCIES})
-target_link_libraries(flight_pilot_node flight_pilot ${OpenCV_LIBRARIES} stdc++fs)
-
-# racing
-
-# catkin_package(
-# LIBRARIES
-# CATKIN_DEPENDS
-# )
-
-# cs_add_executable(racing
-#     src/racing/racing.cpp
-# )
-
-# target_link_libraries(racing
-# ${catkin_LIBRARIES}
-# ${OpenCV_LIBRARIES}
-# stdc++fs
-# zmq
-# zmqpp
-# )
+target_link_libraries(flight_pilot_node ${OpenCV_LIBRARIES} ${flightlib_LIBRARIES} stdc++fs zmqpp)
 
 # camera
-
-add_executable(camera src/camera/camera.cpp)
-ament_target_dependencies(camera ${PROJECT_DEPENDENCIES})
-
-target_link_libraries(camera
+add_executable(camera_node src/camera/camera_node.cpp ${SOURCE_CPP_FILES})
+ament_target_dependencies(camera_node ${PROJECT_DEPENDENCIES})
+target_link_libraries(camera_node
 ${OpenCV_LIBRARIES}
+${flightlib_LIBRARIES}
 stdc++fs
 zmq
 zmqpp
 )
-
-
-
 
 # Finish
 # cs_install()
@@ -113,7 +100,7 @@ install(
 # cs_export()
 install(TARGETS
         flight_pilot_node
-        camera
+        camera_node
         DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

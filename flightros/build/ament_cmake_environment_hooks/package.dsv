@@ -1,0 +1,4 @@
+source;share/flightros/local_setup.bash
+source;share/flightros/local_setup.dsv
+source;share/flightros/local_setup.sh
+source;share/flightros/local_setup.zsh

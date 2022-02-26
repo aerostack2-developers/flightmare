@@ -1,17 +1,16 @@
+#ifndef FLIGHT_PILOT_HPP_
+#define FLIGHT_PILOT_HPP_
 
-#pragma once
-
+#include <Eigen/Dense>
 #include <memory>
 
 // ros
-#include <nav_msgs/Odometry.h>
-#include <ros/ros.h>
+#include <cv_bridge/cv_bridge.h>
 
-// rpg quadrotor
-#include <autopilot/autopilot_helper.h>
-#include <autopilot/autopilot_states.h>
-#include <quadrotor_common/parameter_helper.h>
-#include <quadrotor_msgs/AutopilotFeedback.h>
+#include <nav_msgs/msg/odometry.hpp>
+#include <rclcpp/rclcpp.hpp>
+
+#include "as2_core/node.hpp"
 
 // flightlib
 #include "flightlib/bridges/unity_bridge.hpp"
@@ -20,51 +19,52 @@
 #include "flightlib/objects/quadrotor.hpp"
 #include "flightlib/sensors/rgb_camera.hpp"
 
-using namespace flightlib;
+// camera
+#include <image_transport/image_transport.hpp>
 
-namespace flightros {
+#include "flightlib/bridges/unity_message_types.hpp"
 
-class FlightPilot {
+#define STATE_TOPIC "self_localization/odom"
+#define RGB_TOPIC "camera1/image_raw"
+// #define DEPTH_TOPIC "depht"
+// #define SEGMENT_TOPIC "segmentation"
+// #define OPTFLOW_TOPIC "optical_flow"
+
+class FlightPilot : public as2::Node {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  FlightPilot(const ros::NodeHandle& nh, const ros::NodeHandle& pnh);
-  ~FlightPilot();
+  FlightPilot();
+  ~FlightPilot() { delete image_transport_ptr_; };
+  void setup();
+  void run();
+  std::shared_ptr<rclcpp::Node> getSelfPtr();
 
   // callbacks
-  void mainLoopCallback(const ros::TimerEvent& event);
-  void poseCallback(const nav_msgs::Odometry::ConstPtr& msg);
+  void poseCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
 
   bool setUnity(const bool render);
   bool connectUnity(void);
-  bool loadParams(void);
 
  private:
-  // ros nodes
-  ros::NodeHandle nh_;
-  ros::NodeHandle pnh_;
-
-  // publisher
-
   // subscriber
-  ros::Subscriber sub_state_est_;
-
-  // main loop timer
-  ros::Timer timer_main_loop_;
+  rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_state_est_;
 
   // unity quadrotor
-  std::shared_ptr<Quadrotor> quad_ptr_;
-  std::shared_ptr<RGBCamera> rgb_camera_;
-  QuadState quad_state_;
+  std::shared_ptr<flightlib::Quadrotor> quad_ptr_;
+  std::shared_ptr<flightlib::RGBCamera> rgb_camera_;
+  flightlib::QuadState quad_state_;
 
   // Flightmare(Unity3D)
-  std::shared_ptr<UnityBridge> unity_bridge_ptr_;
-  SceneID scene_id_{UnityScene::WAREHOUSE};
+  std::shared_ptr<flightlib::UnityBridge> unity_bridge_ptr_;
+  flightlib::SceneID scene_id_{flightlib::UnityScene::WAREHOUSE};
   bool unity_ready_{false};
   bool unity_render_{false};
-  RenderMessage_t unity_output_;
+  flightlib::RenderMessage_t unity_output_;
   uint16_t receive_id_{0};
 
-  // auxiliary variables
-  Scalar main_loop_freq_{50.0};
+  // camera
+  flightlib::FrameID frame_id_;
+  image_transport::ImageTransport* image_transport_ptr_ = nullptr;
+  image_transport::Publisher rgb_pub_;
 };
-}  // namespace flightros
+
+#endif  // FLIGHT_PILOT_HPP_
