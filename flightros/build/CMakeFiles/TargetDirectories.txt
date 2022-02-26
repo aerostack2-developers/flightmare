@@ -6,6 +6,7 @@
 /home/dps/flightmare_ws/src/flightmare/flightros/build/CMakeFiles/test.dir
 /home/dps/flightmare_ws/src/flightmare/flightros/build/CMakeFiles/install/local.dir
 /home/dps/flightmare_ws/src/flightmare/flightros/build/CMakeFiles/camera_node.dir
+/home/dps/flightmare_ws/src/flightmare/flightros/build/CMakeFiles/circuit_pilot_node.dir
 /home/dps/flightmare_ws/src/flightmare/flightros/build/CMakeFiles/flightros_uninstall.dir
 /home/dps/flightmare_ws/src/flightmare/flightros/build/CMakeFiles/flight_pilot_node.dir
 /home/dps/flightmare_ws/src/flightmare/flightros/build/CMakeFiles/uninstall.dir

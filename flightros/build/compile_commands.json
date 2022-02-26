@@ -13,7 +13,37 @@
 
 {
   "directory": "/home/dps/flightmare_ws/src/flightmare/flightros/build",
+  "command": "/bin/x86_64-linux-gnu-g++-9  -DDEFAULT_RMW_IMPLEMENTATION=rmw_fastrtps_cpp -DRCUTILS_ENABLE_FAULT_INJECTION -DSPDLOG_COMPILED_LIB -I../include -I../include/flightros -I/usr/include/eigen3 -I/home/dps/flightmare_ws/install/flightlib/include -isystem /home/dps/aerostack2_ws/install/as2_core/include -isystem /home/dps/aerostack2_ws/install/as2_msgs/include -isystem /opt/ros/foxy/include -isystem /usr/include/opencv4   -std=c++17 -DEIGEN_STACK_ALLOCATION_LIMIT=1048576  -std=c++17 -DEIGEN_STACK_ALLOCATION_LIMIT=1048576 -Wall -g   -O3 -std=gnu++17 -o CMakeFiles/camera_node.dir/src/pilot/circuit_pilot.cpp.o -c /home/dps/flightmare_ws/src/flightmare/flightros/src/pilot/circuit_pilot.cpp",
+  "file": "/home/dps/flightmare_ws/src/flightmare/flightros/src/pilot/circuit_pilot.cpp"
+},
+
+{
+  "directory": "/home/dps/flightmare_ws/src/flightmare/flightros/build",
   "command": "/bin/x86_64-linux-gnu-g++-9  -DDEFAULT_RMW_IMPLEMENTATION=rmw_fastrtps_cpp -DRCUTILS_ENABLE_FAULT_INJECTION -DSPDLOG_COMPILED_LIB -I../include -I../include/flightros -I/usr/include/eigen3 -I/home/dps/flightmare_ws/install/flightlib/include -isystem /home/dps/aerostack2_ws/install/as2_core/include -isystem /home/dps/aerostack2_ws/install/as2_msgs/include -isystem /opt/ros/foxy/include -isystem /usr/include/opencv4   -std=c++17 -DEIGEN_STACK_ALLOCATION_LIMIT=1048576  -std=c++17 -DEIGEN_STACK_ALLOCATION_LIMIT=1048576 -Wall -g   -O3 -std=gnu++17 -o CMakeFiles/camera_node.dir/src/camera/camera.cpp.o -c /home/dps/flightmare_ws/src/flightmare/flightros/src/camera/camera.cpp",
+  "file": "/home/dps/flightmare_ws/src/flightmare/flightros/src/camera/camera.cpp"
+},
+
+{
+  "directory": "/home/dps/flightmare_ws/src/flightmare/flightros/build",
+  "command": "/bin/x86_64-linux-gnu-g++-9  -DDEFAULT_RMW_IMPLEMENTATION=rmw_fastrtps_cpp -DRCUTILS_ENABLE_FAULT_INJECTION -DSPDLOG_COMPILED_LIB -I../include -I../include/flightros -I/usr/include/eigen3 -I/home/dps/flightmare_ws/install/flightlib/include -isystem /home/dps/aerostack2_ws/install/as2_core/include -isystem /home/dps/aerostack2_ws/install/as2_msgs/include -isystem /opt/ros/foxy/include -isystem /usr/include/opencv4   -std=c++17 -DEIGEN_STACK_ALLOCATION_LIMIT=1048576  -std=c++17 -DEIGEN_STACK_ALLOCATION_LIMIT=1048576 -Wall -g   -O3 -std=gnu++17 -o CMakeFiles/circuit_pilot_node.dir/src/pilot/circuit_pilot_node.cpp.o -c /home/dps/flightmare_ws/src/flightmare/flightros/src/pilot/circuit_pilot_node.cpp",
+  "file": "/home/dps/flightmare_ws/src/flightmare/flightros/src/pilot/circuit_pilot_node.cpp"
+},
+
+{
+  "directory": "/home/dps/flightmare_ws/src/flightmare/flightros/build",
+  "command": "/bin/x86_64-linux-gnu-g++-9  -DDEFAULT_RMW_IMPLEMENTATION=rmw_fastrtps_cpp -DRCUTILS_ENABLE_FAULT_INJECTION -DSPDLOG_COMPILED_LIB -I../include -I../include/flightros -I/usr/include/eigen3 -I/home/dps/flightmare_ws/install/flightlib/include -isystem /home/dps/aerostack2_ws/install/as2_core/include -isystem /home/dps/aerostack2_ws/install/as2_msgs/include -isystem /opt/ros/foxy/include -isystem /usr/include/opencv4   -std=c++17 -DEIGEN_STACK_ALLOCATION_LIMIT=1048576  -std=c++17 -DEIGEN_STACK_ALLOCATION_LIMIT=1048576 -Wall -g   -O3 -std=gnu++17 -o CMakeFiles/circuit_pilot_node.dir/src/pilot/flight_pilot.cpp.o -c /home/dps/flightmare_ws/src/flightmare/flightros/src/pilot/flight_pilot.cpp",
+  "file": "/home/dps/flightmare_ws/src/flightmare/flightros/src/pilot/flight_pilot.cpp"
+},
+
+{
+  "directory": "/home/dps/flightmare_ws/src/flightmare/flightros/build",
+  "command": "/bin/x86_64-linux-gnu-g++-9  -DDEFAULT_RMW_IMPLEMENTATION=rmw_fastrtps_cpp -DRCUTILS_ENABLE_FAULT_INJECTION -DSPDLOG_COMPILED_LIB -I../include -I../include/flightros -I/usr/include/eigen3 -I/home/dps/flightmare_ws/install/flightlib/include -isystem /home/dps/aerostack2_ws/install/as2_core/include -isystem /home/dps/aerostack2_ws/install/as2_msgs/include -isystem /opt/ros/foxy/include -isystem /usr/include/opencv4   -std=c++17 -DEIGEN_STACK_ALLOCATION_LIMIT=1048576  -std=c++17 -DEIGEN_STACK_ALLOCATION_LIMIT=1048576 -Wall -g   -O3 -std=gnu++17 -o CMakeFiles/circuit_pilot_node.dir/src/pilot/circuit_pilot.cpp.o -c /home/dps/flightmare_ws/src/flightmare/flightros/src/pilot/circuit_pilot.cpp",
+  "file": "/home/dps/flightmare_ws/src/flightmare/flightros/src/pilot/circuit_pilot.cpp"
+},
+
+{
+  "directory": "/home/dps/flightmare_ws/src/flightmare/flightros/build",
+  "command": "/bin/x86_64-linux-gnu-g++-9  -DDEFAULT_RMW_IMPLEMENTATION=rmw_fastrtps_cpp -DRCUTILS_ENABLE_FAULT_INJECTION -DSPDLOG_COMPILED_LIB -I../include -I../include/flightros -I/usr/include/eigen3 -I/home/dps/flightmare_ws/install/flightlib/include -isystem /home/dps/aerostack2_ws/install/as2_core/include -isystem /home/dps/aerostack2_ws/install/as2_msgs/include -isystem /opt/ros/foxy/include -isystem /usr/include/opencv4   -std=c++17 -DEIGEN_STACK_ALLOCATION_LIMIT=1048576  -std=c++17 -DEIGEN_STACK_ALLOCATION_LIMIT=1048576 -Wall -g   -O3 -std=gnu++17 -o CMakeFiles/circuit_pilot_node.dir/src/camera/camera.cpp.o -c /home/dps/flightmare_ws/src/flightmare/flightros/src/camera/camera.cpp",
   "file": "/home/dps/flightmare_ws/src/flightmare/flightros/src/camera/camera.cpp"
 },
 
@@ -27,6 +57,12 @@
   "directory": "/home/dps/flightmare_ws/src/flightmare/flightros/build",
   "command": "/bin/x86_64-linux-gnu-g++-9  -DDEFAULT_RMW_IMPLEMENTATION=rmw_fastrtps_cpp -DRCUTILS_ENABLE_FAULT_INJECTION -DSPDLOG_COMPILED_LIB -I../include -I../include/flightros -I/usr/include/eigen3 -I/home/dps/flightmare_ws/install/flightlib/include -isystem /home/dps/aerostack2_ws/install/as2_core/include -isystem /home/dps/aerostack2_ws/install/as2_msgs/include -isystem /opt/ros/foxy/include -isystem /usr/include/opencv4   -std=c++17 -DEIGEN_STACK_ALLOCATION_LIMIT=1048576  -std=c++17 -DEIGEN_STACK_ALLOCATION_LIMIT=1048576 -Wall -g   -O3 -std=gnu++17 -o CMakeFiles/flight_pilot_node.dir/src/pilot/flight_pilot.cpp.o -c /home/dps/flightmare_ws/src/flightmare/flightros/src/pilot/flight_pilot.cpp",
   "file": "/home/dps/flightmare_ws/src/flightmare/flightros/src/pilot/flight_pilot.cpp"
+},
+
+{
+  "directory": "/home/dps/flightmare_ws/src/flightmare/flightros/build",
+  "command": "/bin/x86_64-linux-gnu-g++-9  -DDEFAULT_RMW_IMPLEMENTATION=rmw_fastrtps_cpp -DRCUTILS_ENABLE_FAULT_INJECTION -DSPDLOG_COMPILED_LIB -I../include -I../include/flightros -I/usr/include/eigen3 -I/home/dps/flightmare_ws/install/flightlib/include -isystem /home/dps/aerostack2_ws/install/as2_core/include -isystem /home/dps/aerostack2_ws/install/as2_msgs/include -isystem /opt/ros/foxy/include -isystem /usr/include/opencv4   -std=c++17 -DEIGEN_STACK_ALLOCATION_LIMIT=1048576  -std=c++17 -DEIGEN_STACK_ALLOCATION_LIMIT=1048576 -Wall -g   -O3 -std=gnu++17 -o CMakeFiles/flight_pilot_node.dir/src/pilot/circuit_pilot.cpp.o -c /home/dps/flightmare_ws/src/flightmare/flightros/src/pilot/circuit_pilot.cpp",
+  "file": "/home/dps/flightmare_ws/src/flightmare/flightros/src/pilot/circuit_pilot.cpp"
 },
 
 {

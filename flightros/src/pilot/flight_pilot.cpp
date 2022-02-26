@@ -18,7 +18,6 @@ FlightPilot::FlightPilot()
 
 void FlightPilot::setup() {
   // camera
-
   image_transport_ptr_ =
     new image_transport::ImageTransport(this->getSelfPtr());
   image_transport::ImageTransport& image_transport_ = *image_transport_ptr_;
@@ -33,7 +32,7 @@ void FlightPilot::setup() {
   rgb_camera_->setFOV(90);
   rgb_camera_->setWidth(720);
   rgb_camera_->setHeight(480);
-  rgb_camera_->setRelPose(B_r_BC, R_BC);
+  // rgb_camera_->setRelPose(B_r_BC, R_BC);
   quad_ptr_->addRGBCamera(rgb_camera_);
 
   // initialization
@@ -95,6 +94,7 @@ std::shared_ptr<rclcpp::Node> FlightPilot::getSelfPtr() {
   // std::shared_ptr<rclcpp::Node> derived =
   //   std::dynamic_pointer_cast<rclcpp::Node>(base);
   // return derived;
+  // FIXME: Do not create a new Node
   static std::shared_ptr<rclcpp::Node> ptr =
     std::make_shared<rclcpp::Node>("camera_test");
   return ptr;

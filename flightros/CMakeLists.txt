@@ -51,14 +51,7 @@ set(PROJECT_DEPENDENCIES
   image_transport
   cv_bridge)
 
-
-
-
 #add_subdirectory(../flightlib/ flightlib/)#CHAPUZA WARNING!!! <-----------
-
-
-
-
 
 foreach(DEPENDENCY ${PROJECT_DEPENDENCIES})
   find_package(${DEPENDENCY} REQUIRED)
@@ -72,6 +65,7 @@ include_directories(
 
 set(SOURCE_CPP_FILES
 src/pilot/flight_pilot.cpp
+src/pilot/circuit_pilot.cpp
 src/camera/camera.cpp
 )
 
@@ -79,6 +73,10 @@ src/camera/camera.cpp
 add_executable(flight_pilot_node src/pilot/flight_pilot_node.cpp ${SOURCE_CPP_FILES})
 ament_target_dependencies(flight_pilot_node ${PROJECT_DEPENDENCIES})
 target_link_libraries(flight_pilot_node ${OpenCV_LIBRARIES} ${flightlib_LIBRARIES} stdc++fs zmqpp)
+
+add_executable(circuit_pilot_node src/pilot/circuit_pilot_node.cpp ${SOURCE_CPP_FILES})
+ament_target_dependencies(circuit_pilot_node ${PROJECT_DEPENDENCIES})
+target_link_libraries(circuit_pilot_node ${OpenCV_LIBRARIES} ${flightlib_LIBRARIES} stdc++fs zmqpp)
 
 # camera
 add_executable(camera_node src/camera/camera_node.cpp ${SOURCE_CPP_FILES})
@@ -100,6 +98,7 @@ install(
 # cs_export()
 install(TARGETS
         flight_pilot_node
+        circuit_pilot_node
         camera_node
         DESTINATION lib/${PROJECT_NAME})
 
