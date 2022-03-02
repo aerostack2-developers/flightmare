@@ -25,7 +25,7 @@
 #include "flightlib/bridges/unity_message_types.hpp"
 
 #define STATE_TOPIC "self_localization/odom"
-#define RGB_TOPIC "camera1/image_raw"
+#define RGB_TOPIC "camera2/image_raw"
 // #define DEPTH_TOPIC "depht"
 // #define SEGMENT_TOPIC "segmentation"
 // #define OPTFLOW_TOPIC "optical_flow"

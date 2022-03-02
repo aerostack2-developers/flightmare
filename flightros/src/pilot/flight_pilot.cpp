@@ -2,7 +2,7 @@
 
 FlightPilot::FlightPilot()
   : as2::Node("FlightPilot"),
-    scene_id_(flightlib::UnityScene::WAREHOUSE),
+    scene_id_(flightlib::UnityScene::PLANTA),
     unity_ready_(false),
     unity_render_(false),
     receive_id_(0) {
@@ -25,14 +25,15 @@ void FlightPilot::setup() {
   rgb_pub_ = image_transport_.advertise(RGB_TOPIC, 1);
   frame_id_ = 0;
 
-  flightlib::Vector<3> B_r_BC(0.0, 0.0, 0.3);
-  flightlib::Matrix<3, 3> R_BC =
-    flightlib::Quaternion(1.0, 0.0, 0.0, 0.0).toRotationMatrix();
+  flightlib::Vector<3> B_r_BC(0.0, 0.0, -0.3);
+  flightlib::Matrix<3, 3> R_BC = 
+    flightlib::Quaternion(-0.5, 0.5, -0.5, 0.5).toRotationMatrix();  // Ventral
+  // flightlib::Matrix<3, 3> R_BC = flightlib::Quaternion(-0.7071068, 0, 0, 0.7071068).toRotationMatrix(); // Frontal
 
   rgb_camera_->setFOV(90);
   rgb_camera_->setWidth(720);
   rgb_camera_->setHeight(480);
-  // rgb_camera_->setRelPose(B_r_BC, R_BC);
+  rgb_camera_->setRelPose(B_r_BC, R_BC);
   quad_ptr_->addRGBCamera(rgb_camera_);
 
   // initialization
