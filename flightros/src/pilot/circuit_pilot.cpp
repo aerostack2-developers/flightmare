@@ -18,23 +18,23 @@ CircuitPilot::CircuitPilot()
   std::string object_id1 = "unity_gate1";
   std::string prefab_id1 = "aruco_gate2";
   gate1 = std::make_shared<ArucoGate>(object_id1, prefab_id1);
-  gate1->setPosition(Eigen::Vector3f(-5.0, 5.0, 1.5));
-  gate1->setQuaternion(flightlib::Quaternion(0.0, 0.0, 0.0, 1.0));
+  gate1->setPosition(Eigen::Vector3f(-5.0, 5.0, 0.0));
+  gate1->setQuaternion(flightlib::Quaternion(-0.7071068, 0.0, 0.0, 0.7071068));
   std::string object_id2 = "unity_gate2";
   std::string prefab_id2 = "aruco_gate2";
   gate2 = std::make_shared<flightlib::StaticGate>(object_id2, prefab_id2);
-  gate2->setPosition(Eigen::Vector3f(5.0, 10.0, 2.0));
-  gate2->setQuaternion(flightlib::Quaternion(0.0, 0.0, 0.0, 1.0));
+  gate2->setPosition(Eigen::Vector3f(5.0, 10.0, 0.0));
+  gate2->setQuaternion(flightlib::Quaternion(-0.7071068, 0.0, 0.0, 0.7071068));
   std::string object_id3 = "unity_gate3";
   std::string prefab_id3 = "aruco_gate2";
   gate3 = std::make_shared<flightlib::StaticGate>(object_id3, prefab_id3);
-  gate3->setPosition(Eigen::Vector3f(-5.0, 10.0, 3.0));
-  gate3->setQuaternion(flightlib::Quaternion(0.0, 0.0, 0.0, 1.0));
+  gate3->setPosition(Eigen::Vector3f(-5.0, 10.0, 0.0));
+  gate3->setQuaternion(flightlib::Quaternion(0.7071068, 0.0, 0.0, 0.7071068));
   std::string object_id4 = "unity_gate4";
   std::string prefab_id4 = "aruco_gate2";
   gate4 = std::make_shared<flightlib::StaticGate>(object_id4, prefab_id4);
-  gate4->setPosition(Eigen::Vector3f(5.0, 5.0, 2.5));
-  gate4->setQuaternion(flightlib::Quaternion(0.0, 0.0, 0.0, 0.1));
+  gate4->setPosition(Eigen::Vector3f(5.0, 5.0, 0.0));
+  gate4->setQuaternion(flightlib::Quaternion(0.7071068, 0.0, 0.0, 0.7071068));
   // std::string object_id5 = "unity_gate5";
   // std::string prefab_id5 = "aruco_gate2";
   // gate5 = std::make_shared<flightlib::StaticGate>(object_id5, prefab_id5);
@@ -73,7 +73,7 @@ void CircuitPilot::setup() {
 
   flightlib::Vector<3> B_r_BC(0.0, 0.0, 0.3);
   flightlib::Matrix<3, 3> R_BC =
-    flightlib::Quaternion(1.0, 0.0, 0.0, 0.0).toRotationMatrix();
+    flightlib::Quaternion(0.0, 0.0, 0.0, 1.0).toRotationMatrix();
 
   rgb_camera_->setFOV(90);
   rgb_camera_->setWidth(720);

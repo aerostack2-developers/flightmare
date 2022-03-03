@@ -95,8 +95,7 @@ std::shared_ptr<rclcpp::Node> FlightPilot::getSelfPtr() {
   //   std::dynamic_pointer_cast<rclcpp::Node>(base);
   // return derived;
   // FIXME: Do not create a new Node
-  static std::shared_ptr<rclcpp::Node> ptr =
-    std::make_shared<rclcpp::Node>("camera_test");
+  auto ptr = std::make_shared<rclcpp::Node>("camera_test");
   return ptr;
 }
 
