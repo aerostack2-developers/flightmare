@@ -59,7 +59,6 @@ class FlightPilot : public as2::Node {
   bool unity_ready_{false};
   bool unity_render_{false};
   flightlib::RenderMessage_t unity_output_;
-  uint16_t receive_id_{0};
 
   // camera
   flightlib::FrameID frame_id_;

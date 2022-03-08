@@ -1,11 +1,13 @@
 #include "flightros/pilot/flight_pilot.hpp"
 
-FlightPilot::FlightPilot()
-  : as2::Node("FlightPilot"),
-    scene_id_(flightlib::UnityScene::PLANTA),
-    unity_ready_(false),
-    unity_render_(false),
-    receive_id_(0) {
+FlightPilot::FlightPilot(): as2::Node("FlightPilot")
+{
+  this->declare_parameter<bool>("render", true);
+  this->get_parameter("render", unity_render_);
+
+  this->declare_parameter<int>("scene_id", flightlib::UnityScene::WAREHOUSE);
+  this->get_parameter("scene_id", scene_id_);
+
   sub_state_est_ = this->create_subscription<nav_msgs::msg::Odometry>(
     STATE_TOPIC, 1,
     std::bind(&FlightPilot::poseCallback, this, std::placeholders::_1));
@@ -41,7 +43,6 @@ void FlightPilot::setup() {
   quad_ptr_->reset(quad_state_);
 
   // connect unity
-  unity_render_ = true;  // FIXME
   setUnity(unity_render_);
   connectUnity();
 }
