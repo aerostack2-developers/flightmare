@@ -82,8 +82,14 @@ void CircuitPilot::setup() {
   quad_ptr_->addRGBCamera(rgb_camera_);
 
   // initialization
-  quad_state_.setZero();
-  quad_ptr_->reset(quad_state_);
+  // quad_state_.setZero();
+  // quad_ptr_->reset(quad_state_);
+  flightlib::QuadState quad_state;
+  quad_state.setZero();
+  quad_state.x[flightlib::QuadState::POSX] = 2.0;
+  quad_state.x[flightlib::QuadState::POSY] = 2.0;
+  quad_state.x[flightlib::QuadState::POSZ] = 0.0;
+  quad_ptr_->reset(quad_state);
 
   // connect unity
   unity_render_ = true;  // FIXME
@@ -145,13 +151,7 @@ bool CircuitPilot::connectUnity() {
 }
 
 std::shared_ptr<rclcpp::Node> CircuitPilot::getSelfPtr() {
-  // auto base = enable_shared_from_this<Camera>::shared_from_this();
-  // std::shared_ptr<rclcpp::Node> derived =
-  //   std::dynamic_pointer_cast<rclcpp::Node>(base);
-  // return derived;
-  static std::shared_ptr<rclcpp::Node> ptr =
-    std::make_shared<rclcpp::Node>("camera_test");
-  return ptr;
+  return this->shared_from_this();
 }
 
 void CircuitPilot::run() {

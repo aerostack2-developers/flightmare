@@ -27,12 +27,12 @@ void FlightPilot::setup() {
 
   flightlib::Vector<3> B_r_BC(0.0, 0.0, 0.3);
   flightlib::Matrix<3, 3> R_BC =
-    flightlib::Quaternion(1.0, 0.0, 0.0, 0.0).toRotationMatrix();
+    flightlib::Quaternion(0.0, 0.0, 0.0, 1.0).toRotationMatrix();
 
   rgb_camera_->setFOV(90);
   rgb_camera_->setWidth(720);
   rgb_camera_->setHeight(480);
-  // rgb_camera_->setRelPose(B_r_BC, R_BC);
+  rgb_camera_->setRelPose(B_r_BC, R_BC);
   quad_ptr_->addRGBCamera(rgb_camera_);
 
   // initialization
@@ -90,13 +90,7 @@ bool FlightPilot::connectUnity() {
 }
 
 std::shared_ptr<rclcpp::Node> FlightPilot::getSelfPtr() {
-  // auto base = enable_shared_from_this<Camera>::shared_from_this();
-  // std::shared_ptr<rclcpp::Node> derived =
-  //   std::dynamic_pointer_cast<rclcpp::Node>(base);
-  // return derived;
-  // FIXME: Do not create a new Node
-  auto ptr = std::make_shared<rclcpp::Node>("camera_test");
-  return ptr;
+  return this->shared_from_this();
 }
 
 void FlightPilot::run() {
