@@ -123,14 +123,7 @@ bool FlightPilot::connectUnity() {
 }
 
 std::shared_ptr<rclcpp::Node> FlightPilot::getSelfPtr() {
-  // auto base = enable_shared_from_this<Camera>::shared_from_this();
-  // std::shared_ptr<rclcpp::Node> derived =
-  //   std::dynamic_pointer_cast<rclcpp::Node>(base);
-  // return derived;
-  // FIXME: Do not create a new Node
-  static std::shared_ptr<rclcpp::Node> ptr =
-    std::make_shared<rclcpp::Node>("camera_test");
-  return ptr;
+  return this->shared_from_this();
 }
 
 void FlightPilot::run() {

@@ -36,7 +36,7 @@ class FlightPilot : public as2::Node {
   ~FlightPilot() { delete image_transport_ptr_; };
   void setup();
   void run();
-  std::shared_ptr<rclcpp::Node> getSelfPtr();
+  virtual std::shared_ptr<rclcpp::Node> getSelfPtr();
 
   // callbacks
   void poseCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
