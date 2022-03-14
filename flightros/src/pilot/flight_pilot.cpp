@@ -32,7 +32,7 @@ void FlightPilot::setup() {
   // camera
   if(model_ == "fpv") {
     flightlib::Vector<3> B_r_BC(0.0, 0.0, 0.3);
-    flightlib::Matrix<3, 3> R_BC = flightlib::Quaternion(-0.7071068, 0, 0, 0.7071068).toRotationMatrix(); // Frontal
+    flightlib::Matrix<3, 3> R_BC = flightlib::Quaternion(0, 0, 0, 1.0).toRotationMatrix(); // Frontal
 
     image_transport_ptr_ =
       new image_transport::ImageTransport(this->getSelfPtr());
@@ -49,8 +49,7 @@ void FlightPilot::setup() {
 
   } else if(model_ == "ventral") {
     flightlib::Vector<3> B_r_BC(0.0, 0.0, -0.3);
-    flightlib::Matrix<3, 3> R_BC = flightlib::Quaternion(-0.5, 0.5, -0.5, 0.5).toRotationMatrix();  // Ventral
-
+    flightlib::Matrix<3, 3> R_BC = flightlib::Quaternion(0.5, -0.5, 0.5, -0.5).toRotationMatrix();  // Ventral
 
     image_transport_ptr_ =
       new image_transport::ImageTransport(this->getSelfPtr());
@@ -60,6 +59,22 @@ void FlightPilot::setup() {
     frame_id_ = 0;
 
     rgb_camera_->setFOV(90);
+    rgb_camera_->setWidth(480);
+    rgb_camera_->setHeight(720);
+    rgb_camera_->setRelPose(B_r_BC, R_BC);
+    quad_ptr_->addRGBCamera(rgb_camera_);
+  } else  if(model_ == "3p") {
+    flightlib::Vector<3> B_r_BC(0.0, 1.0, 0.3);
+    flightlib::Matrix<3, 3> R_BC = flightlib::Quaternion(0, 0, 0, 1.0).toRotationMatrix(); // Frontal
+
+    image_transport_ptr_ =
+      new image_transport::ImageTransport(this->getSelfPtr());
+    image_transport::ImageTransport& image_transport_ = *image_transport_ptr_;
+
+    rgb_pub_ = image_transport_.advertise(RGB_TOPIC, 1);
+    frame_id_ = 0;
+
+    rgb_camera_->setFOV(120);
     rgb_camera_->setWidth(720);
     rgb_camera_->setHeight(480);
     rgb_camera_->setRelPose(B_r_BC, R_BC);
