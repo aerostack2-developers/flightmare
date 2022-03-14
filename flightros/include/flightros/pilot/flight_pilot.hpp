@@ -53,6 +53,14 @@ class FlightPilot : public as2::Node {
   std::shared_ptr<flightlib::RGBCamera> rgb_camera_;
   flightlib::QuadState quad_state_;
 
+  // model
+  std::string model_;
+
+  // initial pose
+  float x_0_;
+  float y_0_;
+  float z_0_;
+
   // Flightmare(Unity3D)
   std::shared_ptr<flightlib::UnityBridge> unity_bridge_ptr_;
   flightlib::SceneID scene_id_{flightlib::UnityScene::WAREHOUSE};

@@ -8,6 +8,16 @@ FlightPilot::FlightPilot(): as2::Node("FlightPilot")
   this->declare_parameter<int>("scene_id", flightlib::UnityScene::WAREHOUSE);
   this->get_parameter("scene_id", scene_id_);
 
+  this->declare_parameter<std::string>("model", "");
+  this->get_parameter("model", model_);
+
+  this->declare_parameter<float>("posx", 0.0);
+  this->get_parameter("posx", x_0_);
+  this->declare_parameter<float>("posy", 0.0);
+  this->get_parameter("posy", y_0_);
+  this->declare_parameter<float>("posz", 0.0);
+  this->get_parameter("posz", z_0_);
+
   sub_state_est_ = this->create_subscription<nav_msgs::msg::Odometry>(
     STATE_TOPIC, 1,
     std::bind(&FlightPilot::poseCallback, this, std::placeholders::_1));
@@ -20,26 +30,47 @@ FlightPilot::FlightPilot(): as2::Node("FlightPilot")
 
 void FlightPilot::setup() {
   // camera
-  image_transport_ptr_ =
-    new image_transport::ImageTransport(this->getSelfPtr());
-  image_transport::ImageTransport& image_transport_ = *image_transport_ptr_;
+  if(model_ == "fpv") {
+    flightlib::Vector<3> B_r_BC(0.0, 0.0, 0.3);
+    flightlib::Matrix<3, 3> R_BC = flightlib::Quaternion(-0.7071068, 0, 0, 0.7071068).toRotationMatrix(); // Frontal
 
-  rgb_pub_ = image_transport_.advertise(RGB_TOPIC, 1);
-  frame_id_ = 0;
+    image_transport_ptr_ =
+      new image_transport::ImageTransport(this->getSelfPtr());
+    image_transport::ImageTransport& image_transport_ = *image_transport_ptr_;
 
-  flightlib::Vector<3> B_r_BC(0.0, 0.0, -0.3);
-  flightlib::Matrix<3, 3> R_BC = 
-    flightlib::Quaternion(-0.5, 0.5, -0.5, 0.5).toRotationMatrix();  // Ventral
-  // flightlib::Matrix<3, 3> R_BC = flightlib::Quaternion(-0.7071068, 0, 0, 0.7071068).toRotationMatrix(); // Frontal
+    rgb_pub_ = image_transport_.advertise(RGB_TOPIC, 1);
+    frame_id_ = 0;
 
-  rgb_camera_->setFOV(90);
-  rgb_camera_->setWidth(720);
-  rgb_camera_->setHeight(480);
-  rgb_camera_->setRelPose(B_r_BC, R_BC);
-  quad_ptr_->addRGBCamera(rgb_camera_);
+    rgb_camera_->setFOV(90);
+    rgb_camera_->setWidth(720);
+    rgb_camera_->setHeight(480);
+    rgb_camera_->setRelPose(B_r_BC, R_BC);
+    quad_ptr_->addRGBCamera(rgb_camera_);
+
+  } else if(model_ == "ventral") {
+    flightlib::Vector<3> B_r_BC(0.0, 0.0, -0.3);
+    flightlib::Matrix<3, 3> R_BC = flightlib::Quaternion(-0.5, 0.5, -0.5, 0.5).toRotationMatrix();  // Ventral
+
+
+    image_transport_ptr_ =
+      new image_transport::ImageTransport(this->getSelfPtr());
+    image_transport::ImageTransport& image_transport_ = *image_transport_ptr_;
+
+    rgb_pub_ = image_transport_.advertise(RGB_TOPIC, 1);
+    frame_id_ = 0;
+
+    rgb_camera_->setFOV(90);
+    rgb_camera_->setWidth(720);
+    rgb_camera_->setHeight(480);
+    rgb_camera_->setRelPose(B_r_BC, R_BC);
+    quad_ptr_->addRGBCamera(rgb_camera_);
+  }
 
   // initialization
   quad_state_.setZero();
+  quad_state_.x[flightlib::QuadState::POSX] = x_0_;
+  quad_state_.x[flightlib::QuadState::POSY] = y_0_;
+  quad_state_.x[flightlib::QuadState::POSZ] = z_0_;
   quad_ptr_->reset(quad_state_);
 
   // connect unity
@@ -49,18 +80,18 @@ void FlightPilot::setup() {
 
 void FlightPilot::poseCallback(const nav_msgs::msg::Odometry::SharedPtr msg) {
   // Position
-  quad_state_.x[flightlib::QuadState::POSX] = (float)msg->pose.pose.position.x;
-  quad_state_.x[flightlib::QuadState::POSY] = (float)msg->pose.pose.position.y;
-  quad_state_.x[flightlib::QuadState::POSZ] = (float)msg->pose.pose.position.z;
+  quad_state_.x[flightlib::QuadState::POSX] = (float)msg->pose.pose.position.x + x_0_;
+  quad_state_.x[flightlib::QuadState::POSY] = (float)msg->pose.pose.position.y + y_0_;
+  quad_state_.x[flightlib::QuadState::POSZ] = (float)msg->pose.pose.position.z + z_0_;
   // Orientation
-  quad_state_.x[flightlib::QuadState::ATTW] =
-    (float)msg->pose.pose.orientation.w;
   quad_state_.x[flightlib::QuadState::ATTX] =
     (float)msg->pose.pose.orientation.x;
   quad_state_.x[flightlib::QuadState::ATTY] =
     (float)msg->pose.pose.orientation.y;
   quad_state_.x[flightlib::QuadState::ATTZ] =
-    (float)msg->pose.pose.orientation.z;
+    (float)msg->pose.pose.orientation.z - 0.70710678;
+  quad_state_.x[flightlib::QuadState::ATTW] =
+    (float)msg->pose.pose.orientation.w + 0.70710678;
 
   quad_ptr_->setState(quad_state_);
 
@@ -103,45 +134,44 @@ std::shared_ptr<rclcpp::Node> FlightPilot::getSelfPtr() {
 }
 
 void FlightPilot::run() {
-  // camera
-  if (!unity_ready_) {
-    RCLCPP_ERROR(this->get_logger(), "Can't connect with Unity!");
-    return;
+  if (image_transport_ptr_ != nullptr ) { 
+
+    // camera
+    if (!unity_ready_) {
+      RCLCPP_ERROR(this->get_logger(), "Can't connect with Unity!");
+      return;
+    }
+
+    // unity_bridge_ptr_->getRender(frame_id_);
+    // unity_bridge_ptr_->handleOutput();
+
+    cv::Mat img;
+    rclcpp::Time timestamp = this->get_clock()->now();
+
+    rgb_camera_->getRGBImage(img);
+    sensor_msgs::msg::Image::SharedPtr rgb_msg =
+      cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", img).toImageMsg();
+    rgb_msg->header.stamp = timestamp;
+    rgb_pub_.publish(rgb_msg);
+
+    // rgb_camera_->getDepthMap(img);
+    // sensor_msgs::msg::Image::SharedPtr depth_msg =
+    //   cv_bridge::CvImage(std_msgs::msg::Header(), "32FC1", img).toImageMsg();
+    // depth_msg->header.stamp = timestamp;
+    // depth_pub_.publish(depth_msg);
+
+    // rgb_camera_->getSegmentation(img);
+    // sensor_msgs::msg::Image::SharedPtr segmentation_msg =
+    //   cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", img).toImageMsg();
+    // segmentation_msg->header.stamp = timestamp;
+    // segmentation_pub_.publish(segmentation_msg);
+
+    // rgb_camera_->getOpticalFlow(img);
+    // sensor_msgs::msg::Image::SharedPtr opticflow_msg =
+    //   cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", img).toImageMsg();
+    // opticflow_msg->header.stamp = timestamp;
+    // opticalflow_pub_.publish(opticflow_msg);
+
+    frame_id_ += 1;
   }
-
-  quad_state_.x[flightlib::QuadState::POSZ] += 0.1;
-
-  quad_ptr_->setState(quad_state_);
-
-  // unity_bridge_ptr_->getRender(frame_id_);
-  // unity_bridge_ptr_->handleOutput();
-
-  cv::Mat img;
-  rclcpp::Time timestamp = this->get_clock()->now();
-
-  rgb_camera_->getRGBImage(img);
-  sensor_msgs::msg::Image::SharedPtr rgb_msg =
-    cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", img).toImageMsg();
-  rgb_msg->header.stamp = timestamp;
-  rgb_pub_.publish(rgb_msg);
-
-  // rgb_camera_->getDepthMap(img);
-  // sensor_msgs::msg::Image::SharedPtr depth_msg =
-  //   cv_bridge::CvImage(std_msgs::msg::Header(), "32FC1", img).toImageMsg();
-  // depth_msg->header.stamp = timestamp;
-  // depth_pub_.publish(depth_msg);
-
-  // rgb_camera_->getSegmentation(img);
-  // sensor_msgs::msg::Image::SharedPtr segmentation_msg =
-  //   cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", img).toImageMsg();
-  // segmentation_msg->header.stamp = timestamp;
-  // segmentation_pub_.publish(segmentation_msg);
-
-  // rgb_camera_->getOpticalFlow(img);
-  // sensor_msgs::msg::Image::SharedPtr opticflow_msg =
-  //   cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", img).toImageMsg();
-  // opticflow_msg->header.stamp = timestamp;
-  // opticalflow_pub_.publish(opticflow_msg);
-
-  frame_id_ += 1;
 }

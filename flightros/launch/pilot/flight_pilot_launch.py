@@ -27,6 +27,10 @@ def generate_launch_description():
         DeclareLaunchArgument('drone_id', default_value='drone0'),
         DeclareLaunchArgument('render', default_value='true'),
         DeclareLaunchArgument('scene_id', default_value='1'),
+        DeclareLaunchArgument('model', default_value=''),
+        DeclareLaunchArgument('posx', default_value='0.0'),
+        DeclareLaunchArgument('posy', default_value='0.0'),
+        DeclareLaunchArgument('posz', default_value='0.0'),
         Node(
             package='flightros',
             namespace=LaunchConfiguration('drone_id'),
@@ -36,7 +40,11 @@ def generate_launch_description():
             emulate_tty=True,
             parameters=[
                 {"scene_id": LaunchConfiguration('scene_id'),
-                "render": LaunchConfiguration('render')
+                "render": LaunchConfiguration('render'),
+                "model": LaunchConfiguration('model'),
+                "posx": LaunchConfiguration('posx'),
+                "posy": LaunchConfiguration('posy'),
+                "posz": LaunchConfiguration('posz')
                 }]
         ),
 
