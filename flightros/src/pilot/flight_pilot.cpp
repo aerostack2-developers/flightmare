@@ -19,7 +19,8 @@ FlightPilot::FlightPilot(): as2::Node("FlightPilot")
   this->get_parameter("posz", z_0_);
 
   sub_state_est_ = this->create_subscription<nav_msgs::msg::Odometry>(
-    STATE_TOPIC, 1,
+    as2_names::topics::self_localization::odom, 
+    as2_names::topics::self_localization::qos,
     std::bind(&FlightPilot::poseCallback, this, std::placeholders::_1));
 
   // Quad initialization
