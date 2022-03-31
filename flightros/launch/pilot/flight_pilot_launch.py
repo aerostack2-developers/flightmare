@@ -8,7 +8,7 @@ import os
 import subprocess
 
 AS2_WS_PATH = os.getenv('AEROSTACK2_WORKSPACE')
-FLIGHTMARE_PATH = os.path.join(f"{AS2_WS_PATH}", "src/flightmare/flightrender/RPG_Flightmare/RPG_Flightmare/RPG_Flightmare.x86_64")
+FLIGHTMARE_PATH = os.path.join(f"{AS2_WS_PATH}", "src/flightmare/flightrender/RPG_Flightmare/RPG_Flightmare.x86_64")
 
 def kill_flightmare(_launch_context):
     process = subprocess.run("out=$(ps aux | grep flightros | grep -v 'grep' | awk -v col=2 '{print $col}'); printf 'Cleaning on exit.. ' ; for i in $out; do printf '[pid '$i'] ' && kill -9 $i; done; echo ''" , shell=True)
