@@ -3,12 +3,15 @@
 
 #include <Eigen/Dense>
 #include <memory>
+#include <vector>
+// #include <math>
 
 // ros
 #include <cv_bridge/cv_bridge.h>
 
 #include <nav_msgs/msg/odometry.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <tf2/utils.h>
 
 #include "as2_core/node.hpp"
 #include "as2_core/names/topics.hpp"
@@ -57,9 +60,7 @@ class FlightPilot : public as2::Node {
   std::string model_;
 
   // initial pose
-  float x_0_;
-  float y_0_;
-  float z_0_;
+  std::vector<double> pose_0_;  // {x, y, z, yaw}
 
   // Flightmare(Unity3D)
   std::shared_ptr<flightlib::UnityBridge> unity_bridge_ptr_;
@@ -69,6 +70,8 @@ class FlightPilot : public as2::Node {
   flightlib::RenderMessage_t unity_output_;
 
   // camera
+  std::vector<double> cam_pose_;
+  std::vector<double> cam_orient_;
   flightlib::FrameID frame_id_;
   image_transport::ImageTransport* image_transport_ptr_ = nullptr;
   image_transport::Publisher rgb_pub_;

@@ -7,16 +7,15 @@ FlightPilot::FlightPilot(): as2::Node("FlightPilot")
 
   this->declare_parameter<int>("scene_id", flightlib::UnityScene::WAREHOUSE);
   this->get_parameter("scene_id", scene_id_);
+  
+  this->declare_parameter<std::vector<double>>("drone.pose", {0.0, 0.0, 0.0, 0.0});
+  this->get_parameter("drone.pose", pose_0_);
 
-  this->declare_parameter<std::string>("model", "");
-  this->get_parameter("model", model_);
+  this->declare_parameter<std::vector<double>>("drone.cam.pose", {0.0, 0.0, 0.0});
+  this->get_parameter("drone.cam.pose", cam_pose_);
 
-  this->declare_parameter<float>("posx", 0.0);
-  this->get_parameter("posx", x_0_);
-  this->declare_parameter<float>("posy", 0.0);
-  this->get_parameter("posy", y_0_);
-  this->declare_parameter<float>("posz", 0.0);
-  this->get_parameter("posz", z_0_);
+  this->declare_parameter<std::vector<double>>("drone.cam.orientation", {0.0, 0.0, 0.0});
+  this->get_parameter("drone.cam.orientation", cam_orient_);
 
   sub_state_est_ = this->create_subscription<nav_msgs::msg::Odometry>(
     as2_names::topics::self_localization::odom, 
@@ -30,63 +29,34 @@ FlightPilot::FlightPilot(): as2::Node("FlightPilot")
 }
 
 void FlightPilot::setup() {
-  // camera
-  if(model_ == "fpv") {
-    flightlib::Vector<3> B_r_BC(0.0, 0.0, 0.3);
-    flightlib::Matrix<3, 3> R_BC = flightlib::Quaternion(0, 0, 0, 1.0).toRotationMatrix(); // Frontal
+  tf2::Quaternion cam_quad;
+  cam_quad.setRPY(-cam_orient_[2], cam_orient_[0], -cam_orient_[1]);
+  cam_quad = cam_quad.normalize();
 
-    image_transport_ptr_ =
-      new image_transport::ImageTransport(this->getSelfPtr());
-    image_transport::ImageTransport& image_transport_ = *image_transport_ptr_;
+  flightlib::Vector<3> B_r_BC(cam_pose_[0], cam_pose_[1], cam_pose_[2]);
+  flightlib::Matrix<3, 3> R_BC = flightlib::Quaternion(cam_quad.getX(),
+                                                       cam_quad.getY(),
+                                                       cam_quad.getZ(),
+                                                       cam_quad.getW()).toRotationMatrix();
 
-    rgb_pub_ = image_transport_.advertise(RGB_TOPIC, 1);
-    frame_id_ = 0;
+  image_transport_ptr_ =
+    new image_transport::ImageTransport(this->getSelfPtr());
+  image_transport::ImageTransport& image_transport_ = *image_transport_ptr_;
 
-    rgb_camera_->setFOV(90);
-    rgb_camera_->setWidth(720);
-    rgb_camera_->setHeight(480);
-    rgb_camera_->setRelPose(B_r_BC, R_BC);
-    quad_ptr_->addRGBCamera(rgb_camera_);
+  rgb_pub_ = image_transport_.advertise(RGB_TOPIC, 1);
+  frame_id_ = 0;
 
-  } else if(model_ == "ventral") {
-    flightlib::Vector<3> B_r_BC(0.0, 0.0, -0.3);
-    flightlib::Matrix<3, 3> R_BC = flightlib::Quaternion(0.5, -0.5, 0.5, -0.5).toRotationMatrix();  // Ventral
-
-    image_transport_ptr_ =
-      new image_transport::ImageTransport(this->getSelfPtr());
-    image_transport::ImageTransport& image_transport_ = *image_transport_ptr_;
-
-    rgb_pub_ = image_transport_.advertise(RGB_TOPIC, 1);
-    frame_id_ = 0;
-
-    rgb_camera_->setFOV(90);
-    rgb_camera_->setWidth(480);
-    rgb_camera_->setHeight(720);
-    rgb_camera_->setRelPose(B_r_BC, R_BC);
-    quad_ptr_->addRGBCamera(rgb_camera_);
-  } else  if(model_ == "3p") {
-    flightlib::Vector<3> B_r_BC(0.0, 1.0, 0.3);
-    flightlib::Matrix<3, 3> R_BC = flightlib::Quaternion(0, 0, 0, 1.0).toRotationMatrix(); // Frontal
-
-    image_transport_ptr_ =
-      new image_transport::ImageTransport(this->getSelfPtr());
-    image_transport::ImageTransport& image_transport_ = *image_transport_ptr_;
-
-    rgb_pub_ = image_transport_.advertise(RGB_TOPIC, 1);
-    frame_id_ = 0;
-
-    rgb_camera_->setFOV(120);
-    rgb_camera_->setWidth(720);
-    rgb_camera_->setHeight(480);
-    rgb_camera_->setRelPose(B_r_BC, R_BC);
-    quad_ptr_->addRGBCamera(rgb_camera_);
-  }
+  rgb_camera_->setFOV(90);
+  rgb_camera_->setWidth(720);
+  rgb_camera_->setHeight(480);
+  rgb_camera_->setRelPose(B_r_BC, R_BC);
+  quad_ptr_->addRGBCamera(rgb_camera_);
 
   // initialization
   quad_state_.setZero();
-  quad_state_.x[flightlib::QuadState::POSX] = x_0_;
-  quad_state_.x[flightlib::QuadState::POSY] = y_0_;
-  quad_state_.x[flightlib::QuadState::POSZ] = z_0_;
+  quad_state_.x[flightlib::QuadState::POSX] = pose_0_[0];
+  quad_state_.x[flightlib::QuadState::POSY] = pose_0_[1];
+  quad_state_.x[flightlib::QuadState::POSZ] = pose_0_[2];
   quad_ptr_->reset(quad_state_);
 
   // connect unity
@@ -96,18 +66,26 @@ void FlightPilot::setup() {
 
 void FlightPilot::poseCallback(const nav_msgs::msg::Odometry::SharedPtr msg) {
   // Position
-  quad_state_.x[flightlib::QuadState::POSX] = (float)msg->pose.pose.position.x + x_0_;
-  quad_state_.x[flightlib::QuadState::POSY] = (float)msg->pose.pose.position.y + y_0_;
-  quad_state_.x[flightlib::QuadState::POSZ] = (float)msg->pose.pose.position.z + z_0_;
+  quad_state_.x[flightlib::QuadState::POSX] = (float)msg->pose.pose.position.x + pose_0_[0];
+  quad_state_.x[flightlib::QuadState::POSY] = (float)msg->pose.pose.position.y + pose_0_[1];
+  quad_state_.x[flightlib::QuadState::POSZ] = (float)msg->pose.pose.position.z + pose_0_[2];
   // Orientation
-  quad_state_.x[flightlib::QuadState::ATTX] =
-    (float)msg->pose.pose.orientation.x;
-  quad_state_.x[flightlib::QuadState::ATTY] =
-    (float)msg->pose.pose.orientation.y;
-  quad_state_.x[flightlib::QuadState::ATTZ] =
-    (float)msg->pose.pose.orientation.z - 0.70710678;
-  quad_state_.x[flightlib::QuadState::ATTW] =
-    (float)msg->pose.pose.orientation.w + 0.70710678;
+  tf2::Quaternion tf_quaternion;
+  tf_quaternion.setX(msg->pose.pose.orientation.x);
+  tf_quaternion.setY(msg->pose.pose.orientation.y);
+  tf_quaternion.setZ(msg->pose.pose.orientation.z);
+  tf_quaternion.setW(msg->pose.pose.orientation.w);
+
+  tf2::Matrix3x3 rotation_matrix(tf_quaternion);
+  double roll, pitch, yaw;
+  rotation_matrix.getRPY(roll, pitch, yaw);
+  tf_quaternion.setRPY(pitch, -roll, (yaw + M_PI_2));
+
+  // Orientation
+  quad_state_.x[flightlib::QuadState::ATTX] = (float)tf_quaternion.x();
+  quad_state_.x[flightlib::QuadState::ATTY] = (float)tf_quaternion.y();
+  quad_state_.x[flightlib::QuadState::ATTZ] = (float)tf_quaternion.z();
+  quad_state_.x[flightlib::QuadState::ATTW] = (float)tf_quaternion.w();
 
   quad_ptr_->setState(quad_state_);
 

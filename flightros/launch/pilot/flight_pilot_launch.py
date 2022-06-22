@@ -1,8 +1,9 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, OpaqueFunction, LogInfo
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch.conditions import IfCondition
+from launch_ros.substitutions import FindPackageShare
 
 import os
 import subprocess
@@ -23,14 +24,17 @@ def generate_launch_description():
         "PLANTA": '5'
     }
 
+    config = PathJoinSubstitution([
+        FindPackageShare('flightros'),
+        'config', 'ventral.yaml'
+    ])
+
     return LaunchDescription([
+        # TODO: rethink how config files are used with flightmare
         DeclareLaunchArgument('drone_id', default_value='drone0'),
+        DeclareLaunchArgument('config', default_value=config),
         DeclareLaunchArgument('render', default_value='true'),
-        DeclareLaunchArgument('scene_id', default_value='1'),
-        DeclareLaunchArgument('model', default_value=''),
-        DeclareLaunchArgument('posx', default_value='0.0'),
-        DeclareLaunchArgument('posy', default_value='0.0'),
-        DeclareLaunchArgument('posz', default_value='0.0'),
+        # TODO: render param is dplicated in config file and launch argument
         Node(
             package='flightros',
             namespace=LaunchConfiguration('drone_id'),
@@ -39,13 +43,7 @@ def generate_launch_description():
             output='screen',
             emulate_tty=True,
             parameters=[
-                {"scene_id": LaunchConfiguration('scene_id'),
-                "render": LaunchConfiguration('render'),
-                "model": LaunchConfiguration('model'),
-                "posx": LaunchConfiguration('posx'),
-                "posy": LaunchConfiguration('posy'),
-                "posz": LaunchConfiguration('posz')
-                }]
+                {LaunchConfiguration('config')}]
         ),
 
         ExecuteProcess(
