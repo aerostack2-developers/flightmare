@@ -22,12 +22,10 @@ namespace flightlib {
 
 enum UnityScene {
   INDUSTRIAL = 0,
-  WAREHOUSE = 1,
-  GARAGE = 2,
-  TUNELS = 4,
-  NATUREFOREST = 3,
+  ARUCO = 1,
+  WAREHOUSE = 2, 
   // total number of environment
-  SceneNum = 5
+  SceneNum = 3
 };
 
 // Unity Camera, should not be used alone.

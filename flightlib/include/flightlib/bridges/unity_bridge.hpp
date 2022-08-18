@@ -36,6 +36,7 @@ namespace flightlib {
 class UnityBridge {
  public:
   // constructor & destructor
+  UnityBridge(std::string p_port, std::string s_port);
   UnityBridge();
   ~UnityBridge(){};
 
@@ -58,12 +59,22 @@ class UnityBridge {
   bool addStaticObject(std::shared_ptr<StaticObject> static_object);
 
   // public auxiliary functions
-  inline void setPubPort(const std::string &pub_port) { pub_port_ = pub_port; };
-  inline void setSubPort(const std::string &sub_port) { sub_port_ = sub_port; };
+  inline void setPubPort(const std::string &pub_port) { pub_port_ = pub_port;
+   std::cout << pub_port_<< std::endl;
+   };
+  inline void setSubPort(const std::string &sub_port) { sub_port_ = sub_port;
+   std::cout << sub_port_<< std::endl;
+   };
   // create unity bridge
   static std::shared_ptr<UnityBridge> getInstance(void) {
     static std::shared_ptr<UnityBridge> bridge_ptr =
       std::make_shared<UnityBridge>();
+    return bridge_ptr;
+  };
+  
+  static std::shared_ptr<UnityBridge> getInstance(std::string p_port, std::string s_port) {
+    static std::shared_ptr<UnityBridge> bridge_ptr =
+      std::make_shared<UnityBridge>(p_port, s_port);
     return bridge_ptr;
   };
 
@@ -96,7 +107,7 @@ class UnityBridge {
   int64_t u_packet_latency_;
 
   // axuiliary variables
-  const Scalar unity_connection_time_out_{60.0};
+  const Scalar unity_connection_time_out_{600.0};
   bool unity_ready_{false};
 };
 }  // namespace flightlib

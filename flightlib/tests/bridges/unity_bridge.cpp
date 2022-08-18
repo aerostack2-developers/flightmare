@@ -16,7 +16,7 @@ TEST(UnityBridge, Constructor) {
   std::shared_ptr<Quadrotor> quad = std::make_shared<Quadrotor>(dyn);
   unity_bridge.addQuadrotor(quad);
 
-  unity_ready = unity_bridge.connectUnity(UnityScene::GARAGE);
+  unity_ready = unity_bridge.connectUnity(UnityScene::ARUCO);
 
   if (unity_ready) logger.info("Unity Rendering is connected");
   EXPECT_TRUE(unity_ready);
@@ -33,7 +33,7 @@ TEST(UnityBridge, PointCloud) {
   std::shared_ptr<Quadrotor> quad = std::make_shared<Quadrotor>(dyn);
   unity_bridge.addQuadrotor(quad);
 
-  EXPECT_TRUE(unity_bridge.connectUnity(UnityScene::GARAGE));
+  EXPECT_TRUE(unity_bridge.connectUnity(UnityScene::ARUCO));
   PointCloudMessage_t pointcloud_msg;
   pointcloud_msg.path = "/tmp/";
   pointcloud_msg.file_name = "unity-bridge" + std::to_string(::rand());
@@ -53,7 +53,7 @@ TEST(UnityBridge, HandleOutputRGB) {
   quad->addRGBCamera(rgb);
   unity_bridge.addQuadrotor(quad);
 
-  EXPECT_TRUE(unity_bridge.connectUnity(UnityScene::GARAGE));
+  EXPECT_TRUE(unity_bridge.connectUnity(UnityScene::ARUCO));
 
   FrameID frame_id = 1;
   unity_bridge.getRender(frame_id);
@@ -82,7 +82,7 @@ TEST(UnityBridge, HandleOutputDepth) {
   quad->addRGBCamera(rgb);
   unity_bridge.addQuadrotor(quad);
 
-  EXPECT_TRUE(unity_bridge.connectUnity(UnityScene::GARAGE));
+  EXPECT_TRUE(unity_bridge.connectUnity(UnityScene::ARUCO));
 
   FrameID frame_id = 1;
   unity_bridge.getRender(frame_id);
@@ -111,7 +111,7 @@ TEST(UnityBridge, HandleOutputSegmentation) {
   quad->addRGBCamera(rgb);
   unity_bridge.addQuadrotor(quad);
 
-  EXPECT_TRUE(unity_bridge.connectUnity(UnityScene::GARAGE));
+  EXPECT_TRUE(unity_bridge.connectUnity(UnityScene::ARUCO));
 
   FrameID frame_id = 1;
   unity_bridge.getRender(frame_id);
@@ -140,7 +140,7 @@ TEST(UnityBridge, HandleOutputOpticalFlow) {
   quad->addRGBCamera(rgb);
   unity_bridge.addQuadrotor(quad);
 
-  EXPECT_TRUE(unity_bridge.connectUnity(UnityScene::GARAGE));
+  EXPECT_TRUE(unity_bridge.connectUnity(UnityScene::ARUCO));
 
   FrameID frame_id = 1;
   unity_bridge.getRender(frame_id);
@@ -181,7 +181,7 @@ TEST(UnityBridge, SpawnStaticGate) {
   obj->setPosition(Eigen::Vector3f(0, -10, -3));
   unity_bridge.addStaticObject(obj);
 
-  EXPECT_TRUE(unity_bridge.connectUnity(UnityScene::GARAGE));
+  EXPECT_TRUE(unity_bridge.connectUnity(UnityScene::ARUCO));
   // timeout flightmare
   usleep(5 * 1e6);
 }
@@ -212,7 +212,7 @@ TEST(UnityBridge, Spawn100StaticGate) {
     }
   }
 
-  EXPECT_TRUE(unity_bridge.connectUnity(UnityScene::GARAGE));
+  EXPECT_TRUE(unity_bridge.connectUnity(UnityScene::ARUCO));
   // timeout flightmare
   usleep(5 * 1e6);
 }
