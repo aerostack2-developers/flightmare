@@ -26,7 +26,7 @@ def generate_launch_description():
 
     config = PathJoinSubstitution([
         FindPackageShare('flightros'),
-        'config', 'solar_panel.yaml'
+        'config', 'fpv.yaml'
     ])
 
     return LaunchDescription([
