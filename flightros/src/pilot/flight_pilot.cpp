@@ -17,8 +17,8 @@ FlightPilot::FlightPilot(): as2::Node("FlightPilot")
   this->declare_parameter<std::vector<double>>("drone.cam.orientation", {0.0, 0.0, 0.0});
   this->get_parameter("drone.cam.orientation", cam_orient_);
 
-  sub_state_est_ = this->create_subscription<nav_msgs::msg::Odometry>(
-    as2_names::topics::self_localization::odom, 
+  sub_state_est_ = this->create_subscription<geometry_msgs::msg::PoseStamped>(
+    as2_names::topics::self_localization::pose, 
     as2_names::topics::self_localization::qos,
     std::bind(&FlightPilot::poseCallback, this, std::placeholders::_1));
 
@@ -64,17 +64,17 @@ void FlightPilot::setup() {
   connectUnity();
 }
 
-void FlightPilot::poseCallback(const nav_msgs::msg::Odometry::SharedPtr msg) {
+void FlightPilot::poseCallback(const geometry_msgs::msg::PoseStamped::SharedPtr msg) {
   // Position
-  quad_state_.x[flightlib::QuadState::POSX] = (float)msg->pose.pose.position.x + pose_0_[0];
-  quad_state_.x[flightlib::QuadState::POSY] = (float)msg->pose.pose.position.y + pose_0_[1];
-  quad_state_.x[flightlib::QuadState::POSZ] = (float)msg->pose.pose.position.z + pose_0_[2];
+  quad_state_.x[flightlib::QuadState::POSX] = (float)msg->pose.position.x + pose_0_[0];
+  quad_state_.x[flightlib::QuadState::POSY] = (float)msg->pose.position.y + pose_0_[1];
+  quad_state_.x[flightlib::QuadState::POSZ] = (float)msg->pose.position.z + pose_0_[2];
   // Orientation
   tf2::Quaternion tf_quaternion;
-  tf_quaternion.setX(msg->pose.pose.orientation.x);
-  tf_quaternion.setY(msg->pose.pose.orientation.y);
-  tf_quaternion.setZ(msg->pose.pose.orientation.z);
-  tf_quaternion.setW(msg->pose.pose.orientation.w);
+  tf_quaternion.setX(msg->pose.orientation.x);
+  tf_quaternion.setY(msg->pose.orientation.y);
+  tf_quaternion.setZ(msg->pose.orientation.z);
+  tf_quaternion.setW(msg->pose.orientation.w);
 
   tf2::Matrix3x3 rotation_matrix(tf_quaternion);
   double roll, pitch, yaw;

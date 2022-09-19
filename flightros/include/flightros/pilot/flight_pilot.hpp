@@ -9,7 +9,7 @@
 // ros
 #include <cv_bridge/cv_bridge.h>
 
-#include <nav_msgs/msg/odometry.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <tf2/utils.h>
 
@@ -28,6 +28,7 @@
 
 #include "flightlib/bridges/unity_message_types.hpp"
 
+// TODO
 #define RGB_TOPIC "camera2/image_raw"
 // #define DEPTH_TOPIC "depht"
 // #define SEGMENT_TOPIC "segmentation"
@@ -42,14 +43,14 @@ class FlightPilot : public as2::Node {
   virtual std::shared_ptr<rclcpp::Node> getSelfPtr();
 
   // callbacks
-  void poseCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
+  void poseCallback(const geometry_msgs::msg::PoseStamped::SharedPtr msg);
 
   bool setUnity(const bool render);
   bool connectUnity(void);
 
  private:
   // subscriber
-  rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_state_est_;
+  rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_state_est_;
 
   // unity quadrotor
   std::shared_ptr<flightlib::Quadrotor> quad_ptr_;
