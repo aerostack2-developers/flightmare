@@ -11,7 +11,7 @@ FlightPilot::FlightPilot(): as2::Node("FlightPilot")
   this->declare_parameter<std::vector<double>>("drone.pose", {0.0, 0.0, 0.0, 0.0});
   this->get_parameter("drone.pose", pose_0_);
 
-  this->declare_parameter<std::vector<double>>("drone.cam.pose", {0.0, 0.0, 0.0});
+  this->declare_parameter<std::vector<double>>("drone.cam.pose", {0.0, 0.0, 0.3});
   this->get_parameter("drone.cam.pose", cam_pose_);
 
   this->declare_parameter<std::vector<double>>("drone.cam.orientation", {0.0, 0.0, 0.0});
@@ -52,10 +52,12 @@ void FlightPilot::setup() {
   cam_quad = cam_quad.normalize();
 
   flightlib::Vector<3> B_r_BC(cam_pose_[0], cam_pose_[1], cam_pose_[2]);
-  flightlib::Matrix<3, 3> R_BC = flightlib::Quaternion(cam_quad.getX(),
+  flightlib::Matrix<3, 3> R_BC =
+  flightlib::Quaternion(0.0, 0.0, 0.0, 1.0).toRotationMatrix();
+  /*flightlib::Matrix<3, 3> R_BC = flightlib::Quaternion(cam_quad.getX(),
                                                        cam_quad.getY(),
                                                        cam_quad.getZ(),
-                                                       cam_quad.getW()).toRotationMatrix();
+                                                       cam_quad.getW()).toRotationMatrix();*/
 
   image_transport_ptr_ =
     new image_transport::ImageTransport(this->getSelfPtr());
