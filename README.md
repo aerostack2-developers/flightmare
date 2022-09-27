@@ -16,6 +16,10 @@ Flightmare can be used for various applications, including path-planning, reinfo
 
 ## Installation
 Installation instructions can be found in our [Wiki](https://github.com/uzh-rpg/flightmare/wiki).
+
+Flightrender_1 can be found at [Google Drive](https://drive.google.com/drive/folders/1lNyH6HUEJZ9CutynVeF20wL9soQYwca3?usp=sharing)
+
+Flighrender_2 can be found at [Google Drive](https://drive.google.com/drive/folders/1lNyH6HUEJZ9CutynVeF20wL9soQYwca3?usp=sharing)
   
 ## Updates
  *  17.11.2020 [Spotlight](https://youtu.be/8JyrjPLt8wo) Talk at CoRL 2020 

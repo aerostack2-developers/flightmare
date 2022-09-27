@@ -38,13 +38,13 @@ void FlightPilot::setup() {
     std::string object_id = "unity_gate1";
     std::string prefab_id = "";
     if (p_port == "10253"){
-      prefab_id = "aruco_gate2";
+      prefab_id = "simple_gate_orange";
     }
     else{
-      prefab_id = "aruco_gate_green";
+      prefab_id = "simple_gate_green";
     }
     gate = std::make_shared<flightlib::StaticGate>(object_id, prefab_id);
-    gate->setPosition(Eigen::Vector3f(0, 0, 0));
+    gate->setPosition(Eigen::Vector3f(0, 0, 2));
     gate->setQuaternion(
     flightlib::Quaternion(0.0, 0.0, 0.0, 1.0));
   tf2::Quaternion cam_quad;
