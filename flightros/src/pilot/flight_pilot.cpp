@@ -28,6 +28,9 @@ FlightPilot::FlightPilot(): as2::Node("FlightPilot")
     as2_names::topics::sensor_measurements::qos,
     std::bind(&FlightPilot::poseCallback, this, std::placeholders::_1));
 
+  odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>(
+      this->generate_local_name("flightmare/odom"), as2_names::topics::sensor_measurements::qos);
+
   // Quad initialization
   quad_ptr_ = std::make_shared<flightlib::Quadrotor>();
   // Add mono camera
@@ -92,7 +95,6 @@ void FlightPilot::setup() {
 
 void FlightPilot::poseCallback(const nav_msgs::msg::Odometry::SharedPtr msg) {
   // Position
-  
   quad_state_.x[flightlib::QuadState::POSX] = (float)msg->pose.pose.position.x + pose_0_[0];
   quad_state_.x[flightlib::QuadState::POSY] = (float)msg->pose.pose.position.y + pose_0_[1];
   quad_state_.x[flightlib::QuadState::POSZ] = (float)msg->pose.pose.position.z + pose_0_[2];
@@ -114,6 +116,9 @@ void FlightPilot::poseCallback(const nav_msgs::msg::Odometry::SharedPtr msg) {
   quad_state_.x[flightlib::QuadState::ATTZ] = (float)tf_quaternion.z();
   quad_state_.x[flightlib::QuadState::ATTW] = (float)tf_quaternion.w();
 
+  rclcpp::Time timestamp = this->get_clock()->now();
+  msg->header.stamp = timestamp;
+  odom_pub_->publish(*msg);
   quad_ptr_->setState(quad_state_);
 
   if (unity_render_ && unity_ready_) {
@@ -169,6 +174,7 @@ void FlightPilot::run() {
       cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", img).toImageMsg();
     rgb_msg->header.stamp = timestamp;
     rgb_pub_.publish(rgb_msg);
+    
 
     // rgb_camera_->getDepthMap(img);
     // sensor_msgs::msg::Image::SharedPtr depth_msg =

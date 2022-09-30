@@ -53,6 +53,7 @@ class FlightPilot : public as2::Node {
  private:
   // subscriber
   rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_state_est_;
+  rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
 
   // unity quadrotor
   std::shared_ptr<flightlib::Quadrotor> quad_ptr_;
@@ -67,6 +68,7 @@ class FlightPilot : public as2::Node {
   std::vector<double> pose_0_;  // {x, y, z, yaw}
   std::string p_port;
   std::string s_port;
+  nav_msgs::msg::Odometry odom_msg_;
   // Flightmare(Unity3D)
   std::shared_ptr<flightlib::UnityBridge> unity_bridge_ptr_;
   flightlib::SceneID scene_id_{flightlib::UnityScene::WAREHOUSE};
