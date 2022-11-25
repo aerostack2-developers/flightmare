@@ -3,14 +3,18 @@
 
 #include <Eigen/Dense>
 #include <memory>
+#include <vector>
+// #include <math>
 
 // ros
 #include <cv_bridge/cv_bridge.h>
 
-#include <nav_msgs/msg/odometry.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <tf2/utils.h>
 
 #include "as2_core/node.hpp"
+#include "as2_core/names/topics.hpp"
 
 // flightlib
 #include "flightlib/bridges/unity_bridge.hpp"
@@ -24,8 +28,8 @@
 
 #include "flightlib/bridges/unity_message_types.hpp"
 
-#define STATE_TOPIC "self_localization/odom"
-#define RGB_TOPIC "camera1/image_raw"
+// TODO
+#define RGB_TOPIC "camera2/image_raw"
 // #define DEPTH_TOPIC "depht"
 // #define SEGMENT_TOPIC "segmentation"
 // #define OPTFLOW_TOPIC "optical_flow"
@@ -39,19 +43,25 @@ class FlightPilot : public as2::Node {
   virtual std::shared_ptr<rclcpp::Node> getSelfPtr();
 
   // callbacks
-  void poseCallback(const nav_msgs::msg::Odometry::SharedPtr msg);
+  void poseCallback(const geometry_msgs::msg::PoseStamped::SharedPtr msg);
 
   bool setUnity(const bool render);
   bool connectUnity(void);
 
  private:
   // subscriber
-  rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_state_est_;
+  rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_state_est_;
 
   // unity quadrotor
   std::shared_ptr<flightlib::Quadrotor> quad_ptr_;
   std::shared_ptr<flightlib::RGBCamera> rgb_camera_;
   flightlib::QuadState quad_state_;
+
+  // model
+  std::string model_;
+
+  // initial pose
+  std::vector<double> pose_0_;  // {x, y, z, yaw}
 
   // Flightmare(Unity3D)
   std::shared_ptr<flightlib::UnityBridge> unity_bridge_ptr_;
@@ -59,9 +69,10 @@ class FlightPilot : public as2::Node {
   bool unity_ready_{false};
   bool unity_render_{false};
   flightlib::RenderMessage_t unity_output_;
-  uint16_t receive_id_{0};
 
   // camera
+  std::vector<double> cam_pose_;
+  std::vector<double> cam_orient_;
   flightlib::FrameID frame_id_;
   image_transport::ImageTransport* image_transport_ptr_ = nullptr;
   image_transport::Publisher rgb_pub_;
